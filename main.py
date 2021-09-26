@@ -1,5 +1,6 @@
-from os import environ
+from os import environ                                          
 from flask import Flask, redirect, render_template, request, url_for
+from flask_cors import CORS, cross_origin
 import requests
 import json
 import datetime
@@ -18,6 +19,8 @@ def getUserData(route):
 
 
 app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 app.debug = True
 app.port = 8000
 
@@ -33,5 +36,13 @@ def index():
     getUserData("Index Page")
     return render_template('index.html')
 
+
+@app.route('/testapi')
+@cross_origin()
+def testapi():
+    getUserData("Test API")
+    return json.dumps({"message": "Hello World"})
+
+    
 if __name__ == '__main__':
     app.run()
