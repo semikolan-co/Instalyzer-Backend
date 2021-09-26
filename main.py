@@ -4,6 +4,8 @@ from flask_cors import CORS, cross_origin
 import requests
 import json
 import datetime
+import instaloader
+L = instaloader.Instaloader()
 
 def getUserData(route):
     if request.headers.getlist("X-Forwarded-For"):
@@ -41,7 +43,43 @@ def index():
 @cross_origin()
 def testapi():
     getUserData("Test API")
-    return json.dumps({"message": "Hello World"})
+    
+    profile = instaloader.Profile.from_username(L.context, 'semikolan.co')
+    print(profile.profile_pic_url)
+    # for post in profile.get_posts():
+    #     print("Imaege URL",post.url)
+    #     print("Likes Count",post.likes)
+    
+
+    # Map profile.get_posts() to a list of dictionaries
+    posts = [{
+        'url': post.url,
+        'shortcode': post.shortcode,
+        'mediaid': post.mediaid,
+        'caption': post.caption,
+        'caption_hashtags': post.caption_hashtags,
+        'caption_mentions': post.caption_mentions,
+        'date': post.date_local,
+        'typename': post.typename,
+        'likes': post.likes,
+        'comments': post.comments,
+    } for post in profile.get_posts()]
+
+    # return json.dumps(posts)
+
+    userprofile = {
+        "username": profile.username,
+        "full_name": profile.full_name,
+        "profile_pic_url": profile.profile_pic_url,
+        "biography": profile.biography,
+        "external_url": profile.external_url,
+        "followers": profile.followers,
+        "follows": profile.followees,
+        "posts": posts,
+        "is_private": profile.is_private,
+        "is_verified": profile.is_verified,
+    }
+    return {"profile": userprofile}
 
     
 if __name__ == '__main__':
