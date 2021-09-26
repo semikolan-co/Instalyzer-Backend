@@ -1,7 +1,6 @@
-# Flask Boiler Plate
-This is a Flask Boiler Plate Template designed by [SemiKolan](https://semikolan.co) 
+# Instalyzer Backend 
 
-# How to SetUp Local Enviroment
+## How to SetUp Local Enviroment
 At begin you need to Fork this repository, after that you need to clone this repository to your Local System. You can simply use git clone command to clone repository
 ``` 
 git clone https://github.com/<your_username>/Flask-Boilerplate.git
