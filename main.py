@@ -1,5 +1,5 @@
 from os import environ                                          
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, url_for, jsonify
 from flask_cors import CORS, cross_origin
 import requests
 import json
@@ -20,31 +20,8 @@ def getUserData(route):
         f.write(f"\n\n\n")
 
 
-app = Flask(__name__)
-cors = CORS(app)
-app.config['CORS_HEADERS'] = 'Content-Type'
-app.debug = True
-app.port = 8000
-
-# 404 Handling
-@app.errorhandler(404)
-def not_found(e):
-    getUserData("404 Page")
-    return render_template("pages/404.html")
-
-# Website
-@app.route('/')
-def index():
-    getUserData("Index Page")
-    return render_template('index.html')
-
-
-@app.route('/testapi')
-@cross_origin()
-def testapi():
-    getUserData("Test API")
-    
-    profile = instaloader.Profile.from_username(L.context, 'semikolan.co')
+def getProfile(username):
+    profile = instaloader.Profile.from_username(L.context, username)
     print(profile.profile_pic_url)
     # for post in profile.get_posts():
     #     print("Imaege URL",post.url)
@@ -79,7 +56,50 @@ def testapi():
         "is_private": profile.is_private,
         "is_verified": profile.is_verified,
     }
-    return {"profile": userprofile}
+    return userprofile
+
+app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+app.debug = True
+app.port = 8000
+
+# 404 Handling
+@app.errorhandler(404)
+def not_found(e):
+    getUserData("404 Page")
+    return render_template("pages/404.html")
+
+# Website
+@app.route('/')
+def index():
+    getUserData("Index Page")
+    return render_template('index.html')
+
+
+@app.route('/testapi')
+@cross_origin()
+def testapi():
+    getUserData("Test API")
+    username = request.args.get('username')
+    print("Username",username)
+    # return "HIiii"
+    
+    response = jsonify({'profile': getProfile(username)})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+@app.route('/getuser')
+@cross_origin()
+def testapi():
+    getUserData("Test API")
+    username = request.args.get('username')
+    print("Username",username)
+    # return "HIiii"
+    
+    response = jsonify({'profile': getProfile(username)})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
     
 if __name__ == '__main__':
